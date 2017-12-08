@@ -52,6 +52,20 @@ public:
     
 };
 
+class IntStack
+{
+	IntLL L;
+public:
+	//IntStack();
+	//~IntStack();
+	void Push(int x);
+	void Pop();
+	int Top();
+	bool isEmpty();
+	int sizeStack();
+	void freeStack();
+};
+
 //---------------------------------------------------------Function Declarations---------------------------------------------------
 void Function1();
 void Function2();
@@ -343,4 +357,33 @@ int IntQueue::SizeQueue()
 void IntQueue::freeQueue()
 {
     L.freeLL();
+}
+
+//--------------------------------------------------- Class IntStack Functions
+void IntStack::Push(int x)
+{
+	L.Insert(x,0);
+}
+void IntStack::Pop()
+{
+	if(!L.SizeLL())
+		return;
+	else
+		L.Delete();
+}
+int IntStack::Top()
+{
+	return L.Element();
+}
+bool IntStack::isEmpty()
+{
+	return !L.SizeLL();
+}
+int IntStack::sizeStack()
+{
+	return L.SizeLL();
+}
+void IntStack::freeStack()
+{
+	L.freeLL();
 }
