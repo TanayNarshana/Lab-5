@@ -5,7 +5,13 @@
 using namespace std;
 
 
-//----------------------------------------------------------------Node Structures
+enum Color
+{
+	WHITE,GREY,BLACK
+};
+
+
+//----------------------------------------------------------------Node Structures-------------------------------------------------
 
 struct Node
 {
@@ -46,7 +52,7 @@ public:
     
 };
 
-//---------------------------------------------------------Function Declarations-----------------------------------------------------
+//---------------------------------------------------------Function Declarations---------------------------------------------------
 void Function1();
 void Function2();
 void Function3();
@@ -54,7 +60,7 @@ void Function4();
 void Function5();
 void Function6();
 
-//---------------------------------------------------------------Main----------------------------------------------------------------
+//---------------------------------------------------------------Main-------------------------------------------------------------
 int main()
 {
     ios_base::sync_with_stdio(false);
@@ -85,14 +91,18 @@ int main()
     return 0;
 }
 
-//------------------------------------------------------------Function Definitions----------------------------------------------------
+//------------------------------------------------------------Function Definitions-------------------------------------------------
 
 //-----------------------------------------------------------------BFS
 
 void Function1()
 {
-    int N,D,s,i,j;
+    int N,D,s,i,j,u,v;
     cin>>N>>D>>s;
+    s--;
+    Color *colour=new Color[N];
+    int *Level=new int[N];
+    int *countLevel=new int[N];
     int **Adj=new int*[N];
     for(i=0;i<N;i++)
         Adj[i]=new int[N];
@@ -102,7 +112,59 @@ void Function1()
         {
             cin>>Adj[i][j];
         }
+        colour[i]=WHITE;
+        countLevel[i]=0;
     }
+    int TreeEdges,backEdges,forwardEdges,crossEdges;
+    TreeEdges=backEdges=forwardEdges=crossEdges=0;
+    //BFS Algorithm with modifications to calculate all required items.
+    Level[s]=0;
+    colour[s]=GREY;
+    IntQueue Q;
+    Q.Enqueue(s);
+    while(!Q.isEmpty())
+    {
+    	u=Q.Front();
+    	Q.Dequeue();
+    	for(i=0;i<N;i++)
+    	{
+    		if(Adj[u][i])
+    		{
+    			if(colour[i]==WHITE)
+    			{
+    				Q.Enqueue(i);
+    				Level[i]=Level[u]+1;
+    				TreeEdges++;
+    				colour[i]=GREY; //Discovered
+    			}
+    			else if(colour[i]==GREY)
+    				backEdges++;
+    			else if(colour[i]==BLACK)
+    				forwardEdges++;
+    			else
+    				crossEdges++;
+    		}	
+    	}
+    	colour[u]=BLACK;
+    }
+    for(i=0;i<N;i++)
+    	countLevel[Level[i]]++;
+    for(i=1;i<N;i++)
+    {
+    	cout<<countLevel[i]<<" ";
+    	if(countLevel[i]==0)
+    		break;
+    }
+    if(i==N&&countLevel[i-1]!=0)
+    	cout<<0<<" ";
+    if(D)
+    	cout<<TreeEdges<<" "<<backEdges<<" "<<forwardEdges<<" "<<crossEdges<<endl;
+    else
+    	cout<<TreeEdges<<" "<<backEdges<<endl;
+    free(colour);
+    free(Level);
+    free(countLevel);
+    free(Adj);
 }
 
 void Function2()
@@ -188,7 +250,7 @@ void IntLL::Print()
         cout<<temp->data<<" ";
         temp=temp->next;
     }
-    cout<<"\n";
+    cout<<endl;
 }
 
 int IntLL::SizeLL()
