@@ -11,7 +11,7 @@ enum Color
 };
 
 
-//----------------------------------------------------------------Node Structures-------------------------------------------------
+//----------------------------------------------------------------Node Structures----------------------------------------------------
 
 struct Node
 {
@@ -68,6 +68,7 @@ public:
 
 //---------------------------------------------------------Function Declarations---------------------------------------------------
 void DFS_VISIT(int u,int *TIME,Color *colour,int *pi,int *start,int *finish,int **Adj, int N,int *treeEdges,int *backEdges,int *forwardEdges,int *crossEdges,int D);
+void BFS_VISIT(int s,Color *colour,int N,int **Adj,int *Level,int *level,int *pi,int* treeEdges, int* backEdges,int *crossEdges,int D);
 void Function1();
 void Function2();
 void Function3();
@@ -108,7 +109,7 @@ int main()
 
 //------------------------------------------------------------Function Definitions-------------------------------------------------
 
-//-----------------------------------------------------------------BFS
+//-----------------------------------------------------------------BFS--------------------------------------------------------------
 
 void Function1()
 {
@@ -134,55 +135,19 @@ void Function1()
     int treeEdges,backEdges,forwardEdges,crossEdges;
     treeEdges=backEdges=forwardEdges=crossEdges=0;
     //BFS Algorithm with modifications to calculate all required items.
-    Level[s]=0;
-    colour[s]=GREY;
-    IntQueue Q;
-    Q.Enqueue(s);
-    while(!Q.isEmpty())
+    int level=0;
+    Level[s]=level;
+    BFS_VISIT(s,colour,N,Adj,Level,&level,pi,&treeEdges,&backEdges,&crossEdges,D);
+    for(i=0;i<N;i++)
     {
-    	u=Q.Front();
-    	Q.Dequeue();
-    	for(i=0;i<N;i++)
-    	{
-    		if(Adj[u][i])
-    		{
-    			if(colour[i]==WHITE)
-    			{
-    				Q.Enqueue(i);
-    				Level[i]=Level[u]+1;
-    				treeEdges++;
-    				colour[i]=GREY; //Discovered
-                    pi[i]=u;
-    			}
-    			// else if(colour[i]==GREY)
-    			// 	crossEdges++;
-    			// else if(colour[i]==BLACK)
-    			// 	forwardEdges++;
-                else if(D==0 && colour[i]==GREY)
-                    crossEdges++;
-                else if(D==1)
-                {
-                    bool parent = 0;
-                    j=pi[u];
-                    while(1)
-                    {
-                        if(i==j)
-                        {
-                            parent=1;
-                            break;
-                        }
-                        if(j==s)
-                            break;
-                        j=pi[j];
-                    }
-                    if(parent)
-                        backEdges++;
-                    else crossEdges++;
-                }
-    		}	
-    	}
-    	colour[u]=BLACK;
+        if(colour[i]==WHITE)
+        {
+            level++;
+            Level[i]=level;
+            BFS_VISIT(i,colour,N,Adj,Level,&level,pi,&treeEdges,&backEdges,&crossEdges,D); //---------------------------------------------------------------------------------------Calling BFS
+        }
     }
+    
     for(i=0;i<N;i++)
     	countLevel[Level[i]]++;
     for(i=1;i<N;i++)
@@ -205,6 +170,59 @@ void Function1()
     delete[] Adj;
     delete[] pi;
 }
+
+void BFS_VISIT(int s,Color *colour,int N,int **Adj,int *Level,int *level,int *pi,int* treeEdges, int* backEdges,int *crossEdges,int D)
+{
+    int u,i,j;
+    colour[s]=GREY;
+    IntQueue Q;
+    Q.Enqueue(s);
+    while(!Q.isEmpty())
+    {
+        u=Q.Front();
+        Q.Dequeue();
+        for(i=0;i<N;i++)
+        {
+            if(Adj[u][i])
+            {
+                if(colour[i]==WHITE)
+                {
+                    Q.Enqueue(i);
+                    Level[i]=Level[u]+1;
+                    if(Level[i]>*level)
+                        *level=Level[i];
+                    (*treeEdges)++;
+                    colour[i]=GREY; //Discovered
+                    pi[i]=u;
+                }
+                else if(D==0 && colour[i]==GREY)
+                    (*crossEdges)++;
+                else if(D==1)
+                {
+                    bool parent = 0;
+                    j=u;
+                    while(1)
+                    {
+                        if(i==j)
+                        {
+                            parent=1;
+                            break;
+                        }
+                        if(j==s)
+                            break;
+                        j=pi[j];
+                    }
+                    if(parent)
+                        (*backEdges)++;
+                    else (*crossEdges)++;
+                }
+            }   
+        }
+        colour[u]=BLACK;
+    }
+}
+
+//--------------------------------------------------------------DFS-----------------------------------------------------------------
 
 void Function2()
 {
@@ -232,14 +250,15 @@ void Function2()
     treeEdges=backEdges=forwardEdges=crossEdges=0;
     //DFS Algorithm
     i=s;
-    for(j=0;j<N;j++)
+    pi[i]=-1;
+    DFS_VISIT(i,&TIME,colour,pi,start,finish,Adj,N,&treeEdges,&backEdges,&forwardEdges,&crossEdges,D);
+    for(i=0;i<N;i++)
     {
         if(colour[i]==WHITE)
         {
             pi[i]=-1;
             DFS_VISIT(i,&TIME,colour,pi,start,finish,Adj,N,&treeEdges,&backEdges,&forwardEdges,&crossEdges,D);
         }
-        i=(i+1)%N;
     }
     if(D==1)
         cout<<finish[s]<<" "<<treeEdges<<" "<<backEdges<<" "<<forwardEdges<<" "<<crossEdges<<endl;
@@ -255,28 +274,6 @@ void Function2()
     for(i=0;i<N;i++)
         delete[] Adj[i];
     delete[] Adj;
-}
-
-void Function3()
-{
-
-}
-
-void Function4()
-{
-    int N,D,s;
-    cin>>N>>D>>s;
-}
-
-void Function5()
-{
-    int N,D,s;
-    cin>>N>>D>>s;
-}
-
-void Function6()
-{
-
 }
 
 void DFS_VISIT(int u,int *TIME,Color *colour,int *pi,int *start,int *finish,int **Adj, int N,int *treeEdges,int *backEdges,int *forwardEdges,int *crossEdges,int D)
@@ -311,6 +308,43 @@ void DFS_VISIT(int u,int *TIME,Color *colour,int *pi,int *start,int *finish,int 
     colour[u]=BLACK;
     (*TIME)++;
     finish[u]=*TIME;
+}
+
+//----------------------------------------------------------Topological Sort--------------------------------------------------------
+
+void Function3()
+{
+    int N,i,j;
+    cin>>N;
+    int **Adj=new int*[N];
+    for(i=0;i<N;i++)
+        Adj[i]=new int[N];
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<N;j++)
+            cin>>Adj[i][j];
+    }
+
+    for(i=0;i<N;i++)
+        delete[] Adj[i];
+    delete[] Adj;
+}
+
+void Function4()
+{
+    int N,D,s;
+    cin>>N>>D>>s;
+}
+
+void Function5()
+{
+    int N,D,s;
+    cin>>N>>D>>s;
+}
+
+void Function6()
+{
+
 }
 
 //--------------------------------------------------------Class IntLL Functions------------
