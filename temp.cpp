@@ -314,7 +314,7 @@ void DFS_VISIT(int u,int *TIME,Color *colour,int *pi,int *start,int *finish,int 
 
 void Function3()
 {
-    int N,i,j;
+    int N,i,j,p;
     cin>>N;
     int **Adj=new int*[N];
     for(i=0;i<N;i++)
@@ -324,7 +324,50 @@ void Function3()
         for(j=0;j<N;j++)
             cin>>Adj[i][j];
     }
-
+    IntQueue Q;
+    int count=0;
+    int x;
+    while(1)
+    {
+        bool NoIncomingEdge=0;
+        for(i=0;i<N;i++)
+        {
+            p=0;
+            for(j=0;j<N;j++)
+            {
+                if(Adj[j][i]==1)
+                {
+                    p=1;
+                    break;
+                }
+            }
+            if(p==0)
+            {
+                NoIncomingEdge=1;
+                break;
+            }
+        }
+        if(NoIncomingEdge)
+        {
+            Q.Enqueue(i);
+            for(j=0;j<N;j++)
+                Adj[i][j]=Adj[j][i]=0;
+            Adj[i][i]=1;
+        }
+        else
+            break;
+    }
+    if(Q.SizeQueue()==N)
+    {
+        while(!Q.isEmpty())
+        {
+            cout<<Q.Front()+1<<" ";
+            Q.Dequeue();
+        }
+        cout<<endl;
+    }
+    else
+        cout<<-1<<endl;
     for(i=0;i<N;i++)
         delete[] Adj[i];
     delete[] Adj;

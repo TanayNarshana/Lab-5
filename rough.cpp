@@ -47,119 +47,67 @@ public:
     
 };
 //------------------------------------------------------------------------------------------------------------------------------
-void BFS(int s,int N,int D,Color* colour,int* Level,int* pi,int** Adj,int *treeEdges,int *backEdges,int *crossEdges,int* level);
 int main()
 {
-	int N,D,s,i,j;
-	cin>>N>>D>>s;
-	s--;
-	Color *colour=new Color[N];
-    int *Level=new int[N];
-    int *pi=new int[N];
-    int *countLevel=new int[N];
+	int N,i,j,p;
+    cin>>N;
     int **Adj=new int*[N];
     for(i=0;i<N;i++)
         Adj[i]=new int[N];
     for(i=0;i<N;i++)
     {
-    	for(j=0;j<N;j++)
-    		cin>>Adj[i][j];
-    	colour[i]=WHITE;
-    	countLevel[i]=0;
+        for(j=0;j<N;j++)
+            cin>>Adj[i][j];
     }
-    int treeEdges,backEdges,forwardEdges,crossEdges;
-    treeEdges=backEdges=forwardEdges=crossEdges=0;
-    int level=0;
-    BFS(s,N,D,colour,Level,pi,Adj,&treeEdges,&backEdges,&crossEdges,&level);
-    // cout<<level<<endl;
-    // for(i=0;i<N;i++)
-    // 	cout<<colour[i]<<" ";
-    // cout<<endl;
-    for(i=0;i<N;i++)
+    IntQueue Q;
+    int count=0;
+    int x;
+    while(1)
     {
-    	if(colour[i]==WHITE)
+    	bool NoIncomingEdge=0;
+    	for(i=0;i<N;i++)
     	{
-    		level++;
-    		BFS(i,N,D,colour,Level,pi,Adj,&treeEdges,&backEdges,&crossEdges,&level);
+    		p=0;
+    		for(j=0;j<N;j++)
+    		{
+    			if(Adj[j][i]==1)
+    			{
+    				p=1;
+    				break;
+    			}
+    		}
+    		if(p==0)
+    		{
+    			NoIncomingEdge=1;
+    			break;
+    		}
     	}
-    }
-    // cout<<level<<endl;
-    // for(i=0;i<N;i++)
-    // 	cout<<colour[i]<<" ";
-    // cout<<endl;
-    for(i=0;i<N;i++)
-    	countLevel[Level[i]]++;
-    for(i=1;i<N;i++)
-    {
-    	cout<<countLevel[i]<<" ";
-    	if(countLevel[i]==0)
+    	if(NoIncomingEdge)
+    	{
+    		Q.Enqueue(i);
+    		for(j=0;j<N;j++)
+    			Adj[i][j]=Adj[j][i]=0;
+    		Adj[i][i]=1;
+    	}
+    	else
     		break;
     }
-    if(i==N&&countLevel[i-1]!=0)
-    	cout<<0<<" ";
-    if(D)
-    	cout<<treeEdges<<" "<<backEdges<<" "<<forwardEdges<<" "<<crossEdges<<endl;
+    if(Q.SizeQueue()==N)
+    {
+    	while(!Q.isEmpty())
+    	{
+    		cout<<Q.Front()+1<<" ";
+    		Q.Dequeue();
+    	}
+    	cout<<endl;
+    }
     else
-    	cout<<treeEdges<<" "<<crossEdges<<endl;
-    delete[] colour;
-    delete[] Level;
-    delete[] countLevel;
+    	cout<<-1<<endl;
     for(i=0;i<N;i++)
         delete[] Adj[i];
     delete[] Adj;
-    delete[] pi;
 }
 
-void BFS(int s,int N,int D,Color* colour,int* Level,int* pi,int** Adj,int *treeEdges,int *backEdges,int *crossEdges,int* level)
-{
-	int u,i,j;
-	Level[s]=(*level);
-	IntQueue Q;
-	colour[s]=GREY;
-	Q.Enqueue(s);
-	while(!Q.isEmpty())
-	{
-		u=Q.Front();
-		Q.Dequeue();
-		for(i=0;i<N;i++)
-		{
-			if(Adj[u][i])
-			{
-				if(colour[i]==WHITE)
-				{
-					colour[i]==GREY;
-					Level[i]=Level[u]+1;
-					(*level)=max((*level),Level[i]);
-					Q.Enqueue(i);
-					pi[i]=u;
-				}
-				else if(D==0 && colour[i]==GREY)
-                    (*crossEdges)++;
-				else if(D==1)
-                {
-                    bool parent = 0;
-                    j=pi[u];
-                    while(1)
-                    {
-                        if(i==j)
-                        {
-                            parent=1;
-                            break;
-                        }
-                        if(j==s)
-                            break;
-                        j=pi[j];
-                    }
-                    if(parent)
-                        (*backEdges)++;
-                    else (*crossEdges)++;
-                }
-			}
-		}
-		colour[u]=BLACK;
-	}
-
-}
 
 //---------------------------------------------------------------------------------------------------------------------------------
 IntLL::IntLL()
