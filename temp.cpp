@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 
 #define ERROR -99999
+#define INF 999999
 
 using namespace std;
 
@@ -387,7 +388,58 @@ void Function5()
 
 void Function6()
 {
-
+    int N,D,i,j,k;
+    cin>>N>>D;
+    int **dist=new int*[N];
+    for(i=0;i<N;i++)
+        dist[i]=new int[N];
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<N;j++)
+        {
+            cin>>dist[i][j];
+        }
+    }
+    for(k=0;k<N;k++)
+    {
+        for(i=0;i<N;i++)
+        {
+            if(dist[i][k]==INF)
+                continue;
+            for(j=0;j<N;j++)
+            {
+                if(dist[k][j]==INF)
+                    continue;
+                if(dist[i][j]>dist[i][k]+dist[k][j])
+                    dist[i][j]=dist[i][k]+dist[k][j];
+            }
+        }
+    }
+    bool NegativeEdgeCycle=0;
+    for(i=0;i<N;i++)
+    {
+        if(dist[i][i]<0)
+        {
+            NegativeEdgeCycle=1;
+            break;
+        }
+    }
+    if(NegativeEdgeCycle)
+        cout<<-1<<endl;
+    else
+    {
+        for(i=0;i<N;i++)
+        {
+            for(j=0;j<N;j++)
+            {
+                cout<<dist[i][j]<<" ";
+            }
+            cout<<endl;
+        }
+    }
+    for(i=0;i<N;i++)
+        delete[] dist[i];
+    delete[] dist;
 }
 
 //--------------------------------------------------------Class IntLL Functions------------

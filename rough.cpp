@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 
 #define ERROR -99999999
+#define INF 999999
 
 using namespace std;
 
@@ -49,63 +50,59 @@ public:
 //------------------------------------------------------------------------------------------------------------------------------
 int main()
 {
-	int N,i,j,p;
-    cin>>N;
-    int **Adj=new int*[N];
+	int N,D,i,j,k;
+	cin>>N>>D;
+	int **dist=new int*[N];
     for(i=0;i<N;i++)
-        Adj[i]=new int[N];
+        dist[i]=new int[N];
     for(i=0;i<N;i++)
     {
-        for(j=0;j<N;j++)
-            cin>>Adj[i][j];
+    	for(j=0;j<N;j++)
+    	{
+    		cin>>dist[i][j];
+    	}
     }
-    IntQueue Q;
-    int count=0;
-    int x;
-    while(1)
+    for(k=0;k<N;k++)
     {
-    	bool NoIncomingEdge=0;
     	for(i=0;i<N;i++)
     	{
-    		p=0;
+    		if(dist[i][k]==INF)
+    			continue;
     		for(j=0;j<N;j++)
     		{
-    			if(Adj[j][i]==1)
-    			{
-    				p=1;
-    				break;
-    			}
-    		}
-    		if(p==0)
-    		{
-    			NoIncomingEdge=1;
-    			break;
+    			if(dist[k][j]==INF)
+    				continue;
+    			if(dist[i][j]>dist[i][k]+dist[k][j])
+    				dist[i][j]=dist[i][k]+dist[k][j];
     		}
     	}
-    	if(NoIncomingEdge)
-    	{
-    		Q.Enqueue(i);
-    		for(j=0;j<N;j++)
-    			Adj[i][j]=Adj[j][i]=0;
-    		Adj[i][i]=1;
-    	}
-    	else
-    		break;
     }
-    if(Q.SizeQueue()==N)
-    {
-    	while(!Q.isEmpty())
-    	{
-    		cout<<Q.Front()+1<<" ";
-    		Q.Dequeue();
-    	}
-    	cout<<endl;
-    }
-    else
-    	cout<<-1<<endl;
+    bool NegativeEdgeCycle=0;
     for(i=0;i<N;i++)
-        delete[] Adj[i];
-    delete[] Adj;
+    {
+    	if(dist[i][i]<0)
+    	{
+    		NegativeEdgeCycle=1;
+    		break;
+    	}
+    }
+    if(NegativeEdgeCycle)
+    	cout<<-1<<endl;
+    else
+    {
+    	for(i=0;i<N;i++)
+    	{
+    		for(j=0;j<N;j++)
+    		{
+    			cout<<dist[i][j]<<" ";
+    		}
+    		cout<<endl;
+    	}
+    }
+    for(i=0;i<N;i++)
+        delete[] dist[i];
+    delete[] dist;
+    return 0;
 }
 
 
