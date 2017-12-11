@@ -376,8 +376,72 @@ void Function3()
 
 void Function4()
 {
-    int N,D,s;
+    int N,D,s,i,j,x,n;
     cin>>N>>D>>s;
+    s--;
+    IntLL *AdjWeight=new IntLL[N];
+    IntLL *AdjNode=new IntLL[N];
+    Color *colour=new Color[N];
+    int *dist=new int[N];
+    bool DijkstraPossible=1;
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<N;j++)
+        {
+            cin>>x;
+            if(x<0)
+            {
+                DijkstraPossible=0;
+            }
+            if(x!=INF && i!=j)
+            {
+                AdjWeight[i].Insert(x);
+                AdjNode[i].Insert(j);
+            }
+        }
+        colour[i]=WHITE;
+        dist[i]=INF;
+    }
+    if(DijkstraPossible)
+    {
+        int k,len;
+        dist[s]=0;
+        for(k=0;k<N;k++)
+        {
+            colour[s]=GREY;
+            len=AdjNode[s].SizeLL();
+            for(i=0;i<len;i++)
+            {
+                x=AdjWeight[s].Element();
+                AdjWeight[s].Delete();
+                n=AdjNode[s].Element();
+                AdjNode[s].Delete();
+                if(x!=INF)
+                {
+                    if(dist[n]>dist[s]+x)
+                        dist[n]=dist[s]+x;
+                }
+            }
+            x=INF;
+            for(i=0;i<N;i++)
+            {
+                if(colour[i]==WHITE && dist[i]<x)
+                {
+                    x=dist[i];
+                    s=i;
+                }
+            }
+        }
+        for(i=0;i<N;i++)
+            cout<<dist[i]<<" ";
+        cout<<endl;
+    }
+    else
+        cout<<-1<<endl;
+    delete[] AdjWeight;
+    delete[] AdjNode;
+    delete[] colour;
+    delete[] dist;
 }
 
 void Function5()

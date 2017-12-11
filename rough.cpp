@@ -50,58 +50,72 @@ public:
 //------------------------------------------------------------------------------------------------------------------------------
 int main()
 {
-	int N,D,i,j,k;
-	cin>>N>>D;
-	int **dist=new int*[N];
-    for(i=0;i<N;i++)
-        dist[i]=new int[N];
-    for(i=0;i<N;i++)
-    {
-    	for(j=0;j<N;j++)
-    	{
-    		cin>>dist[i][j];
-    	}
-    }
-    for(k=0;k<N;k++)
-    {
-    	for(i=0;i<N;i++)
-    	{
-    		if(dist[i][k]==INF)
-    			continue;
-    		for(j=0;j<N;j++)
-    		{
-    			if(dist[k][j]==INF)
-    				continue;
-    			if(dist[i][j]>dist[i][k]+dist[k][j])
-    				dist[i][j]=dist[i][k]+dist[k][j];
-    		}
-    	}
-    }
-    bool NegativeEdgeCycle=0;
-    for(i=0;i<N;i++)
-    {
-    	if(dist[i][i]<0)
-    	{
-    		NegativeEdgeCycle=1;
-    		break;
-    	}
-    }
-    if(NegativeEdgeCycle)
-    	cout<<-1<<endl;
-    else
-    {
-    	for(i=0;i<N;i++)
-    	{
-    		for(j=0;j<N;j++)
-    		{
-    			cout<<dist[i][j]<<" ";
-    		}
-    		cout<<endl;
-    	}
-    }
-    for(i=0;i<N;i++)
-        delete[] dist[i];
-    delete[] dist;
+	int N,D,s,i,j,x,n;
+	cin>>N>>D>>s;
+	s--;
+	IntLL *AdjWeight=new IntLL[N];
+	IntLL *AdjNode=new IntLL[N];
+	Color *colour=new Color[N];
+	int *dist=new int[N];
+	bool DijkstraPossible=1;
+	for(i=0;i<N;i++)
+	{
+		for(j=0;j<N;j++)
+		{
+			cin>>x;
+			if(x<0)
+			{
+				DijkstraPossible=0;
+			}
+			if(x!=INF && i!=j)
+			{
+				AdjWeight[i].Insert(x);
+				AdjNode[i].Insert(j);
+			}
+		}
+		colour[i]=WHITE;
+		dist[i]=INF;
+	}
+	if(DijkstraPossible)
+	{
+		int k,len;
+		dist[s]=0;
+		for(k=0;k<N;k++)
+		{
+			colour[s]=GREY;
+			len=AdjNode[s].SizeLL();
+			for(i=0;i<len;i++)
+			{
+				x=AdjWeight[s].Element();
+				AdjWeight[s].Delete();
+				n=AdjNode[s].Element();
+				AdjNode[s].Delete();
+				if(x!=INF)
+				{
+					if(dist[n]>dist[s]+x)
+						dist[n]=dist[s]+x;
+				}
+			}
+			x=INF;
+			for(i=0;i<N;i++)
+			{
+				if(colour[i]==WHITE && dist[i]<x)
+				{
+					x=dist[i];
+					s=i;
+				}
+			}
+		}
+		for(i=0;i<N;i++)
+			cout<<dist[i]<<" ";
+		cout<<endl;
+	}
+	else
+		cout<<-1<<endl;
+	delete[] AdjWeight;
+	delete[] AdjNode;
+	delete[] colour;
+	delete[] dist;
     return 0;
 }
 
