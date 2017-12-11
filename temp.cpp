@@ -82,12 +82,14 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-
+    ofstream myfile;
+    myfile.open("time.txt",ios::out);
     int t,q,i;
     cin>>t;
     for(i=0;i<t;i++)
     {
         cin>>q;
+        clock_t begin = clock();
         if(q==1)
             Function1();
         else if(q==2)
@@ -100,8 +102,11 @@ int main()
             Function5();
         else if(q==6)
             Function6();
-        else return 0;
+        clock_t end = clock();
+        double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+        myfile<<elapsed_secs<<" seconds"<<endl;
     }
+    myfile.close();
     return 0;
 }
 
