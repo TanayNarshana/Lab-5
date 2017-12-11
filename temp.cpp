@@ -83,27 +83,24 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-    int t,q;
+    int t,q,i;
     cin>>t;
-    while(t--)
+    for(i=0;i<t;i++)
     {
         cin>>q;
-        switch(q)
-        {
-            case 1: Function1();
-                    break;
-            case 2: Function2();
-                    break;
-            case 3: Function3();
-                    break;
-            case 4: Function4();
-                    break;
-            case 5: Function5();
-                    break;
-            case 6: Function6();
-                    break;
-            default: cout<<"Error"<<endl;
-        }
+        if(q==1)
+            Function1();
+        else if(q==2)
+            Function2();
+        else if(q==3)
+            Function3();
+        else if(q==4)
+            Function4();
+        else if(q==5)
+            Function5();
+        else if(q==6)
+            Function6();
+        else return 0;
     }
     return 0;
 }
@@ -446,8 +443,81 @@ void Function4()
 
 void Function5()
 {
-    int N,D,s;
+    //I have used a modified verion of Bellman Ford Algorithm called SPFA.
+    //For detecting negative edge cycles, break condition used is if d[n]<minimum edge width => negative edge cycle.
+    int N,D,s,i,j,x,n,u,len;
+    int MIN=INF;
     cin>>N>>D>>s;
+    s--;
+    IntQueue *AdjWeight=new IntQueue[N];
+    IntQueue *AdjNode=new IntQueue[N];
+    Color *colour=new Color[N];
+    int *dist=new int[N];
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<N;j++)
+        {
+            cin>>x;
+            if(x<MIN)
+                MIN=x;
+            if(x!=INF && i!=j)
+            {
+                AdjWeight[i].Enqueue(x);
+                AdjNode[i].Enqueue(j);
+            }
+        }
+        dist[i]=INF;
+        colour[i]=WHITE;
+    }
+    int countRelax,countModification;
+    countRelax=countModification=0;
+    IntQueue Q;
+    dist[s]=0;
+    Q.Enqueue(s);
+    colour[s]=GREY;
+    while(!Q.isEmpty())
+    {
+        u=Q.Front();
+        Q.Dequeue();
+        colour[u]=WHITE;
+        len=AdjNode[u].SizeQueue();
+        for(i=0;i<len;i++)
+        {
+            x=AdjWeight[u].Front();
+            AdjWeight[u].Dequeue();
+            n=AdjNode[u].Front();
+            AdjNode[u].Dequeue();
+            countRelax++;
+            if(dist[u]!=INF && dist[n]>dist[u]+x)
+            {
+                countModification++;
+                dist[n]=dist[u]+x;
+                if(dist[n]<MIN)                    //And hence graph has negative edge cycle.
+                {
+                    cout<<-1<<endl;
+                    delete[] AdjWeight;
+                    delete[] AdjNode;
+                    delete[] colour;
+                    delete[] dist;
+                    return ;
+                }
+                if(colour[n]==WHITE)
+                {
+                    colour[n]=GREY;
+                    Q.Enqueue(n);
+                }
+            }
+            AdjWeight[u].Enqueue(x);
+            AdjNode[u].Enqueue(n);
+        }
+    }
+    for(int i=0;i<N;i++)
+        cout<<dist[i]<<" ";
+    cout<<countRelax<<" "<<countModification<<endl;
+    delete[] AdjWeight;
+    delete[] AdjNode;
+    delete[] colour;
+    delete[] dist;
 }
 
 void Function6()
